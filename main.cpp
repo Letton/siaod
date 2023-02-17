@@ -10,8 +10,8 @@ void arrayInputHandler(int arr[], size_t arraySize) {
     }
 }
 
-void arrayInputHandler(vector <int> &arr) {
-    for (int &el : arr) {
+void arrayInputHandler(vector<int> &arr) {
+    for (int &el: arr) {
         cin >> el;
     }
 }
@@ -23,8 +23,8 @@ void printArray(int arr[], size_t arraySize) {
     cout << "\n";
 }
 
-void printArray(vector <int>& arr) {
-    for (int& el : arr) {
+void printArray(vector<int> &arr) {
+    for (int &el: arr) {
         cout << el << "  ";
     }
     cout << "\n";
@@ -40,9 +40,9 @@ int findMax(const int arr[], size_t arraySize) {
     return max;
 }
 
-int findMax(vector <int>& arr) {
+int findMax(vector<int> &arr) {
     int max = arr[0];
-    for (int &el : arr) {
+    for (int &el: arr) {
         if (el > max) {
             max = el;
         }
@@ -50,7 +50,7 @@ int findMax(vector <int>& arr) {
     return max;
 }
 
-void arrayInsertMax(int arr[], size_t &arraySize) {
+void arrayInsertMax(int *arr, size_t &arraySize, const bool isStaticArray) {
     int insertIndex = -1;
     for (int i = 0; i < arraySize; ++i) {
         string n = to_string(arr[i]);
@@ -63,17 +63,45 @@ void arrayInsertMax(int arr[], size_t &arraySize) {
     if (insertIndex != -1) {
         int max = findMax(arr, arraySize);
         arraySize += 1;
-        for (int i = arraySize - 1; i > insertIndex; --i) {
+        for (int i = arraySize; i > insertIndex; --i) {
             arr[i] = arr[i - 1];
         }
         arr[insertIndex] = max;
-    }
-    else {
-        cout << "Such element not found\n";
+    } else {
+        cout << "No such element found\n";
     }
 }
 
-void arrayInsertMax(vector <int> &arr) {
+
+void arrayInsertMax(int *&arr, size_t &arraySize) {
+    int insertIndex = -1;
+    for (int i = 0; i < arraySize; ++i) {
+        string n = to_string(arr[i]);
+        if (n[0] == n[n.size() - 1]) {
+            insertIndex = i;
+            break;
+        }
+    }
+    if (insertIndex != -1) {
+        insertIndex++;
+        int max = findMax(arr, arraySize);
+        arraySize += 1;
+        int *arrResized = new int[arraySize];
+        for (int i = 0; i < insertIndex; ++i) {
+            arrResized[i] = arr[i];
+        }
+        arrResized[insertIndex] = max;
+        for (int i = insertIndex + 1; i < arraySize; ++i) {
+            arrResized[i] = arr[i - 1];
+        }
+        delete[] arr;
+        arr = arrResized;
+    } else {
+        cout << "No such element found\n";
+    }
+}
+
+void arrayInsertMax(vector<int> &arr) {
     int insertIndex = -1;
     for (int i = 0; i < arr.size(); ++i) {
         string n = to_string(arr[i]);
@@ -82,39 +110,63 @@ void arrayInsertMax(vector <int> &arr) {
             break;
         }
     }
-    insertIndex++;
     if (insertIndex != -1) {
+        insertIndex++;
         int max = findMax(arr);
         arr.push_back(0);
-        for (int i = arr.size() - 1; i > insertIndex ; --i) {
+        for (int i = arr.size() - 1; i > insertIndex; --i) {
             arr[i] = arr[i - 1];
         }
         arr[insertIndex] = max;
-    }
-    else {
+    } else {
         cout << "Such element not found\n";
     }
 }
 
-//void deleteFibonacciElements(int* arr, size_t &arraySize) {
-//    size_t oldArraySize = arraySize;
-//    for (int i = 0; i < array_size; ++i) {
-//        if (arr[i] > max) {
-//            max = arr[i];
-//        }
-//    }
-//    return max;
-//}
-//
-//void deleteFibonacciElements(vector <int>& arr) {
-//    int max = arr[0];
-//    for (int& el : arr) {
-//        if (el > max) {
-//            max = el;
-//        }
-//    }
-//    return max;
-//}
+bool isFibonacci(const string& num) {
+    if (num[0] != '1' || num[1] != '1' || num.length() < 2) {
+        return false;
+    }
+    string tempSubstring = "11";
+    vector <int> fibNumbers = {1, 1};
+    int curIndex = 2;
+    while (tempSubstring.length() < num.length()) {
+        int fibNumber = fibNumbers[curIndex - 1] + fibNumbers[curIndex - 2];
+        fibNumbers.push_back(fibNumber);
+        tempSubstring += to_string(fibNumber);
+        curIndex++;
+    }
+    if (tempSubstring != num) {
+        return false;
+    }
+    return true;
+}
+
+void deleteFibonacciElements(int arr[], size_t &arraySize) {
+    for (int i = 0; i < arraySize; ++i) {
+        string n = to_string(arr[i]);
+        if (isFibonacci(n))  {
+            arraySize--;
+            for (int j = i; j < arraySize; ++j)  {
+                arr[j] = arr[j + 1];
+            }
+            i--;
+        }
+    }
+}
+
+void deleteFibonacciElements(vector<int> &arr) {
+    for (int i = 0; i < arr.size(); ++i) {
+        string n = to_string(arr[i]);
+        if (isFibonacci(n))  {
+            for (int j = i; j < arr.size() - 1; ++j)  {
+                arr[j] = arr[j + 1];
+            }
+            arr.pop_back();
+            i--;
+        }
+    }
+}
 
 int main() {
     int n;
@@ -125,7 +177,7 @@ int main() {
     cin >> n;
     if (n == 1) {
         int taskType = 0;
-        int arr[1000] = { 0 };
+        int arr[1000] = {0};
         size_t arraySize = 0;
         cout << "Input array size (max 100)\n";
         cin >> arraySize;
@@ -139,20 +191,21 @@ int main() {
             cin >> taskType;
             if (taskType == 1) {
                 cout << "Max element is " << findMax(arr, arraySize) << "\n";
-            }
-            else if (taskType == 2) {
-                arrayInsertMax(arr, arraySize);
+            } else if (taskType == 2) {
+                arrayInsertMax(arr, arraySize, true);
+                printArray(arr, arraySize);
+            } else if (taskType == 3) {
+                deleteFibonacciElements(arr, arraySize);
                 printArray(arr, arraySize);
             }
         }
 
-    }
-    else if (n == 2) {
+    } else if (n == 2) {
         int taskType = 0;
         size_t arraySize = 0;
         cout << "Input array size\n";
         cin >> arraySize;
-        int* arr = new int[arraySize];
+        int *arr = new int[arraySize];
         cout << "Input array, use \"space\" as delimiter\n";
         arrayInputHandler(arr, arraySize);
         while (taskType != -1) {
@@ -163,20 +216,21 @@ int main() {
             cin >> taskType;
             if (taskType == 1) {
                 cout << "Max element is " << findMax(arr, arraySize) << "\n";
-            }
-            else if (taskType == 2) {
+            } else if (taskType == 2) {
                 arrayInsertMax(arr, arraySize);
+                printArray(arr, arraySize);
+            } else if (taskType == 3) {
+                deleteFibonacciElements(arr, arraySize);
                 printArray(arr, arraySize);
             }
         }
         delete[] arr;
-    }
-    else if (n == 3) {
+    } else if (n == 3) {
         int taskType = 0;
         size_t arraySize = 0;
         cout << "Input array size\n";
         cin >> arraySize;
-        vector <int> arr(arraySize);
+        vector<int> arr(arraySize);
         cout << "Input array, use \"space\" as delimiter\n";
         arrayInputHandler(arr);
         while (taskType != -1) {
@@ -187,14 +241,15 @@ int main() {
             cin >> taskType;
             if (taskType == 1) {
                 cout << "Max element is " << findMax(arr) << "\n";
-            }
-            else if (taskType == 2) {
+            } else if (taskType == 2) {
                 arrayInsertMax(arr);
+                printArray(arr);
+            } else if (taskType == 3) {
+                deleteFibonacciElements(arr);
                 printArray(arr);
             }
         }
-    }
-    else {
+    } else {
         cout << "Incorrect input\n";
         return -1;
     }
