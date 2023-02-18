@@ -86,16 +86,11 @@ void arrayInsertMax(int *&arr, size_t &arraySize) {
         insertIndex++;
         int max = findMax(arr, arraySize);
         arraySize += 1;
-        int *arrResized = new int[arraySize];
-        for (int i = 0; i < insertIndex; ++i) {
-            arrResized[i] = arr[i];
+        arr = (int*)realloc(arr, arraySize  *  sizeof(int));
+        for (int i = arraySize; i > insertIndex; --i) {
+            arr[i] = arr[i - 1];
         }
-        arrResized[insertIndex] = max;
-        for (int i = insertIndex + 1; i < arraySize; ++i) {
-            arrResized[i] = arr[i - 1];
-        }
-        delete[] arr;
-        arr = arrResized;
+        arr[insertIndex] = max;
     } else {
         cout << "No such element found\n";
     }
