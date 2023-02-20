@@ -137,7 +137,7 @@ bool isFibonacci(const string& num) {
     return true;
 }
 
-void deleteFibonacciElements(int arr[], size_t &arraySize) {
+void deleteFibonacciElements(int arr[], size_t &arraySize, const bool isStaticArray) {
     for (int i = 0; i < arraySize; ++i) {
         string n = to_string(arr[i]);
         if (isFibonacci(n))  {
@@ -145,6 +145,20 @@ void deleteFibonacciElements(int arr[], size_t &arraySize) {
             for (int j = i; j < arraySize; ++j)  {
                 arr[j] = arr[j + 1];
             }
+            i--;
+        }
+    }
+}
+
+void deleteFibonacciElements(int *&arr, size_t &arraySize) {
+    for (int i = 0; i < arraySize; ++i) {
+        string n = to_string(arr[i]);
+        if (isFibonacci(n)) {
+            arraySize--;
+            for (int j = i; j < arraySize; ++j)  {
+                arr[j] = arr[j + 1];
+            }
+            arr = (int*)realloc(arr, arraySize  *  sizeof(int));
             i--;
         }
     }
@@ -190,7 +204,7 @@ int main() {
                 arrayInsertMax(arr, arraySize, true);
                 printArray(arr, arraySize);
             } else if (taskType == 3) {
-                deleteFibonacciElements(arr, arraySize);
+                deleteFibonacciElements(arr, arraySize,  true);
                 printArray(arr, arraySize);
             }
         }
