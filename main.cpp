@@ -25,7 +25,7 @@ void printArray(int arr[], size_t arraySize) {
 
 void printArray(vector<int> &arr) {
     for (int &el: arr) {
-        cout << el << "  ";
+        cout << el << " ";
     }
     cout << "\n";
 }
