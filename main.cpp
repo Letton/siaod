@@ -182,7 +182,7 @@ int main() {
     cout << "Select a program work option: \n"
             "1 - Static array (max array size = 1000)\n"
             "2 - Dynamic array\n"
-            "3 - Vector\n";
+            "3 - Vector\n"
     cin >> n;
     if (n == 1) {
         int taskType = 0;
@@ -192,11 +192,12 @@ int main() {
         cin >> arraySize;
         cout << "Input array, use \"space\" as delimiter\n";
         arrayInputHandler(arr, arraySize);
-        while (taskType != -1) {
+        while (taskType != 4) {
             cout << "Select task: \n"
                     "1 - Find max element\n"
                     "2 - Insert max element after element whose first and last digits are equal\n"
-                    "3 - Remove elements whose digits form a sequence of Fibonacci numbers in which the first and second numbers are 1\n";
+                    "3 - Remove elements whose digits form a sequence of Fibonacci numbers in which the first and second numbers are 1\n"
+                    "4 - Exit\n";
             cin >> taskType;
             if (taskType == 1) {
                 cout << "Max element is " << findMax(arr, arraySize) << "\n";
@@ -217,11 +218,12 @@ int main() {
         int *arr = new int[arraySize];
         cout << "Input array, use \"space\" as delimiter\n";
         arrayInputHandler(arr, arraySize);
-        while (taskType != -1) {
+        while (taskType != 4) {
             cout << "Select task: \n"
                     "1 - Find max element\n"
                     "2 - Insert max element after element whose first and last digits are equal\n"
-                    "3 - Remove elements whose digits form a sequence of Fibonacci numbers in which the first and second numbers are 1\n";
+                    "3 - Remove elements whose digits form a sequence of Fibonacci numbers in which the first and second numbers are 1\n"
+                    "4 - Exit\n";
             cin >> taskType;
             if (taskType == 1) {
                 cout << "Max element is " << findMax(arr, arraySize) << "\n";
@@ -242,11 +244,12 @@ int main() {
         vector<int> arr(arraySize);
         cout << "Input array, use \"space\" as delimiter\n";
         arrayInputHandler(arr);
-        while (taskType != -1) {
+        while (taskType != 4) {
             cout << "Select task: \n"
                     "1 - Find max element\n"
                     "2 - Insert max element after element whose first and last digits are equal\n"
-                    "3 - Remove elements whose digits form a sequence of Fibonacci numbers in which the first and second numbers are 1\n";
+                    "3 - Remove elements whose digits form a sequence of Fibonacci numbers in which the first and second numbers are 1\n"
+                    "4 - Exit\n";
             cin >> taskType;
             if (taskType == 1) {
                 cout << "Max element is " << findMax(arr) << "\n";
