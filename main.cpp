@@ -182,7 +182,7 @@ int main() {
     cout << "Select a program work option: \n"
             "1 - Static array (max array size = 1000)\n"
             "2 - Dynamic array\n"
-            "3 - Vector\n"
+            "3 - Vector\n";
     cin >> n;
     if (n == 1) {
         int taskType = 0;
