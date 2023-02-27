@@ -1,266 +1,174 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cmath>
 
 using namespace std;
 
-void arrayInputHandler(int arr[], size_t arraySize) {
-    for (int i = 0; i < arraySize; ++i) {
-        cin >> arr[i];
-    }
-}
+const int ROWS = 100;
+const int COLS = 100;
 
-void arrayInputHandler(vector<int> &arr) {
-    for (int &el: arr) {
-        cin >> el;
-    }
-}
+struct Point {
+    int x;
+    int y;
+};
 
-void printArray(int arr[], size_t arraySize) {
-    for (int i = 0; i < arraySize; ++i) {
-        cout << arr[i] << " ";
-    }
-    cout << "\n";
-}
+struct Circle {
+    Point center;
+    int radius;
+};
 
-void printArray(vector<int> &arr) {
-    for (int &el: arr) {
-        cout << el << " ";
-    }
-    cout << "\n";
-}
-
-int findMax(const int arr[], size_t arraySize) {
-    int max = arr[0];
-    for (int i = 0; i < arraySize; ++i) {
-        if (arr[i] > max) {
-            max = arr[i];
-        }
-    }
-    return max;
-}
-
-int findMax(vector<int> &arr) {
-    int max = arr[0];
-    for (int &el: arr) {
-        if (el > max) {
-            max = el;
-        }
-    }
-    return max;
-}
-
-void arrayInsertMax(int *arr, size_t &arraySize, const bool isStaticArray) {
-    int insertIndex = -1;
-    for (int i = 0; i < arraySize; ++i) {
-        string n = to_string(arr[i]);
-        if (n[0] == n[n.size() - 1]) {
-            insertIndex = i;
-            break;
-        }
-    }
-    insertIndex++;
-    if (insertIndex != -1) {
-        int max = findMax(arr, arraySize);
-        arraySize += 1;
-        for (int i = arraySize; i > insertIndex; --i) {
-            arr[i] = arr[i - 1];
-        }
-        arr[insertIndex] = max;
-    } else {
-        cout << "No such element found\n";
-    }
-}
-
-
-void arrayInsertMax(int *&arr, size_t &arraySize) {
-    int insertIndex = -1;
-    for (int i = 0; i < arraySize; ++i) {
-        string n = to_string(arr[i]);
-        if (n[0] == n[n.size() - 1]) {
-            insertIndex = i;
-            break;
-        }
-    }
-    if (insertIndex != -1) {
-        insertIndex++;
-        int max = findMax(arr, arraySize);
-        arraySize += 1;
-        arr = (int*)realloc(arr, arraySize  *  sizeof(int));
-        for (int i = arraySize; i > insertIndex; --i) {
-            arr[i] = arr[i - 1];
-        }
-        arr[insertIndex] = max;
-    } else {
-        cout << "No such element found\n";
-    }
-}
-
-void arrayInsertMax(vector<int> &arr) {
-    int insertIndex = -1;
-    for (int i = 0; i < arr.size(); ++i) {
-        string n = to_string(arr[i]);
-        if (n[0] == n[n.size() - 1]) {
-            insertIndex = i;
-            break;
-        }
-    }
-    if (insertIndex != -1) {
-        insertIndex++;
-        int max = findMax(arr);
-        arr.push_back(0);
-        for (int i = arr.size() - 1; i > insertIndex; --i) {
-            arr[i] = arr[i - 1];
-        }
-        arr[insertIndex] = max;
-    } else {
-        cout << "Such element not found\n";
-    }
-}
-
-bool isFibonacci(const string& num) {
-    if (num[0] != '1' || num[1] != '1' || num.length() < 2) {
-        return false;
-    }
-    string tempSubstring = "11";
-    vector <int> fibNumbers = {1, 1};
-    int curIndex = 2;
-    while (tempSubstring.length() < num.length()) {
-        int fibNumber = fibNumbers[curIndex - 1] + fibNumbers[curIndex - 2];
-        fibNumbers.push_back(fibNumber);
-        tempSubstring += to_string(fibNumber);
-        curIndex++;
-    }
-    if (tempSubstring != num) {
-        return false;
-    }
-    return true;
-}
-
-void deleteFibonacciElements(int arr[], size_t &arraySize, const bool isStaticArray) {
-    for (int i = 0; i < arraySize; ++i) {
-        string n = to_string(arr[i]);
-        if (isFibonacci(n))  {
-            arraySize--;
-            for (int j = i; j < arraySize; ++j)  {
-                arr[j] = arr[j + 1];
+void arrayInputHandler(auto arr, size_t rows, size_t cols, int mode) {
+    if (mode == 1) {
+        cout << "Input array line by line, use \"space\" as delimiter\n";
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
+                cin >> arr[i][j];
             }
-            i--;
+        }
+    } else if (mode == 2) {
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
+                arr[i][j] = rand() % 2000 - 1000;
+            }
         }
     }
 }
 
-void deleteFibonacciElements(int *&arr, size_t &arraySize) {
-    for (int i = 0; i < arraySize; ++i) {
-        string n = to_string(arr[i]);
-        if (isFibonacci(n)) {
-            arraySize--;
-            for (int j = i; j < arraySize; ++j)  {
-                arr[j] = arr[j + 1];
-            }
-            arr = (int*)realloc(arr, arraySize  *  sizeof(int));
-            i--;
+void arrayOutputHandler(auto arr, size_t rows, size_t cols) {
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
+            cout << arr[i][j] << " ";
         }
+        cout << "\n";
     }
 }
 
-void deleteFibonacciElements(vector<int> &arr) {
-    for (int i = 0; i < arr.size(); ++i) {
-        string n = to_string(arr[i]);
-        if (isFibonacci(n))  {
-            for (int j = i; j < arr.size() - 1; ++j)  {
-                arr[j] = arr[j + 1];
+void moveMinElement(auto arr, size_t rows, size_t cols) {
+    int min = INT32_MAX;
+    size_t minRow = 0, minCol = 0;
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
+            if (arr[i][j] < min) {
+                min = arr[i][j];
+                minRow = i;
+                minCol = j;
             }
-            arr.pop_back();
-            i--;
+        }
+    }
+    for (size_t i = minRow; i > 0; --i) {
+        swap(arr[i], arr[i - 1]);
+    }
+    for (size_t i = minCol; i > 0; --i) {
+        swap(arr[0][i], arr[0][i - 1]);
+    }
+}
+
+void pointsInputHandler(auto &points, size_t circlesNumber) {
+    for (size_t i = 0; i < circlesNumber; ++i) {
+        Point p{};
+        cout << "Input x, y of point number " << i + 1 << ", use \"space\" as delimiter\n";
+        cin >> p.x >> p.y;
+        points.push_back(p);
+    }
+}
+
+void circlesInputHandler(auto &circles, size_t pointsNumber) {
+    for (size_t i = 0; i < pointsNumber; ++i) {
+        Point p{};
+        Circle c{};
+        cout << "Input x, y of circle number " << i + 1 << ", use \"space\" as delimiter\n";
+        cin >> p.x >> p.y;
+        c.center = p;
+        cout << "Input radius of circle number " << i + 1 << "\n";
+        cin >> c.radius;
+        circles.push_back(c);
+    }
+
+}
+
+void findIntersections(auto points, auto circles) {
+    for (size_t i = 0; i < points.size(); ++i) {
+        for (size_t j = i + 1; j < points.size(); ++j) {
+            float si, sj, sk;
+            float mi, mj, mk;
+            si = points[j].x - points[i].x;
+            sj = points[j].y - points[i].y;
+            sk = 0;
+            for (size_t k = 0; k < circles.size(); ++k) {
+
+
+            }
+
         }
     }
 }
 
 int main() {
+    srand(time(nullptr));
     int n;
-    cout << "Select a program work option: \n"
-            "1 - Static array (max array size = 1000)\n"
-            "2 - Dynamic array\n"
-            "3 - Vector\n";
+    cout << "Select task: \n"
+            "1 - Given a rectangular matrix. Rearrange the reduced element of the matrix in its upper left corner,\n"
+            "    sequentially permuting rows and columns.\n"
+            "    (static array)\n"
+
+            "2 - Given a rectangular matrix. Rearrange the reduced element of the matrix in its upper left corner,\n"
+            "    sequentially permuting rows and columns.\n"
+            "    (dynamic array)\n"
+            "3 - A set of points A and a set of circles B are given on the plane. Find two such different points\n"
+            "    from A that the line passing through them intersects with the maximum number of circles from B.\n"
+            "    (std::vector)\n";
     cin >> n;
     if (n == 1) {
-        int taskType = 0;
-        int arr[1000] = {0};
-        size_t arraySize = 0;
-        cout << "Input array size (max 100)\n";
-        cin >> arraySize;
-        cout << "Input array, use \"space\" as delimiter\n";
-        arrayInputHandler(arr, arraySize);
-        while (taskType != 4) {
-            cout << "Select task: \n"
-                    "1 - Find max element\n"
-                    "2 - Insert max element after element whose first and last digits are equal\n"
-                    "3 - Remove elements whose digits form a sequence of Fibonacci numbers in which the first and second numbers are 1\n"
-                    "4 - Exit\n";
-            cin >> taskType;
-            if (taskType == 1) {
-                cout << "Max element is " << findMax(arr, arraySize) << "\n";
-            } else if (taskType == 2) {
-                arrayInsertMax(arr, arraySize, true);
-                printArray(arr, arraySize);
-            } else if (taskType == 3) {
-                deleteFibonacciElements(arr, arraySize,  true);
-                printArray(arr, arraySize);
-            }
-        }
-
+        int arr[ROWS][COLS] = {0}, mode;
+        size_t rows, cols = 0;
+        cout << "Input number of rows and coll in array, use \"space\" as delimiter\n"
+                "(max number of rows or cols is 100)\n";
+        cin >> rows >> cols;
+        cout << "Input mode: \n"
+                "1 - Manual filling\n"
+                "2 - Random filling\n";
+        cin >> mode;
+        arrayInputHandler(arr, rows, cols, mode);
+        cout << "Entered array: \n";
+        arrayOutputHandler(arr, rows, cols);
+        moveMinElement(arr, rows, cols);
+        cout << "Result array: \n";
+        arrayOutputHandler(arr, rows, cols);
     } else if (n == 2) {
-        int taskType = 0;
-        size_t arraySize = 0;
-        cout << "Input array size\n";
-        cin >> arraySize;
-        int *arr = new int[arraySize];
-        cout << "Input array, use \"space\" as delimiter\n";
-        arrayInputHandler(arr, arraySize);
-        while (taskType != 4) {
-            cout << "Select task: \n"
-                    "1 - Find max element\n"
-                    "2 - Insert max element after element whose first and last digits are equal\n"
-                    "3 - Remove elements whose digits form a sequence of Fibonacci numbers in which the first and second numbers are 1\n"
-                    "4 - Exit\n";
-            cin >> taskType;
-            if (taskType == 1) {
-                cout << "Max element is " << findMax(arr, arraySize) << "\n";
-            } else if (taskType == 2) {
-                arrayInsertMax(arr, arraySize);
-                printArray(arr, arraySize);
-            } else if (taskType == 3) {
-                deleteFibonacciElements(arr, arraySize);
-                printArray(arr, arraySize);
-            }
+        size_t rows, cols = 0;
+        cout << "Input number of rows and coll in array, use \"space\" as delimiter\n";
+        cin >> rows >> cols;
+        int** arr = new int*[rows];
+        for (size_t i = 0; i < rows; ++i) {
+            arr[i] = new int[cols];
+        }
+        cout << "Input mode: \n"
+                "1 - Manual filling\n"
+                "2 - Random filling\n";
+        int mode;
+        cin >> mode;
+        arrayInputHandler(arr, rows, cols, mode);
+        cout << "Entered array: \n";
+        arrayOutputHandler(arr, rows, cols);
+        moveMinElement(arr, rows, cols);
+        cout << "Result array: \n";
+        arrayOutputHandler(arr, rows, cols);
+        for (size_t i = 0;  i < rows; ++i) {
+            delete[] arr[i];
         }
         delete[] arr;
     } else if (n == 3) {
-        int taskType = 0;
-        size_t arraySize = 0;
-        cout << "Input array size\n";
-        cin >> arraySize;
-        vector<int> arr(arraySize);
-        cout << "Input array, use \"space\" as delimiter\n";
-        arrayInputHandler(arr);
-        while (taskType != 4) {
-            cout << "Select task: \n"
-                    "1 - Find max element\n"
-                    "2 - Insert max element after element whose first and last digits are equal\n"
-                    "3 - Remove elements whose digits form a sequence of Fibonacci numbers in which the first and second numbers are 1\n"
-                    "4 - Exit\n";
-            cin >> taskType;
-            if (taskType == 1) {
-                cout << "Max element is " << findMax(arr) << "\n";
-            } else if (taskType == 2) {
-                arrayInsertMax(arr);
-                printArray(arr);
-            } else if (taskType == 3) {
-                deleteFibonacciElements(arr);
-                printArray(arr);
-            }
-        }
+        vector <Point> points;
+        vector <Circle> circles;
+        size_t pointsNumber, circlesNumber;
+        cout << "Input number of points\n";
+        cin >> pointsNumber;
+        cout << "Input number of circles\n";
+        cin >> circlesNumber;
+        pointsInputHandler(points, pointsNumber);
+        circlesInputHandler(circles, circlesNumber);
+        findIntersections(points, circles);
     } else {
         cout << "Incorrect input\n";
         return -1;
