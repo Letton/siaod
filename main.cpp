@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include <cmath>
-#include "Windows.h"
 
 using namespace std;
 
@@ -65,7 +64,9 @@ void moveMinElement(auto arr, size_t rows, size_t cols) {
         swap(arr[i], arr[i - 1]);
     }
     for (size_t i = minCol; i > 0; --i) {
-        swap(arr[0][i], arr[0][i - 1]);
+        for (size_t j = 0; j < rows; ++j) {
+            swap(arr[j][i], arr[j][i - 1]);
+        }
     }
 }
 
@@ -93,13 +94,15 @@ void circlesInputHandler(auto &circles, size_t pointsNumber) {
 }
 
 
-int intersect(const Segment& seg, const Circle& circle, Point& p1, Point& p2) {
+int intersect(const Segment &seg, const Circle &circle) {
     int intersections = 0;
     double dx = seg.p2.x - seg.p1.x;
     double dy = seg.p2.y - seg.p1.y;
     double a = dx * dx + dy * dy;
     double b = 2 * (dx * (seg.p1.x - circle.center.x) + dy * (seg.p1.y - circle.center.y));
-    double c = circle.center.x * circle.center.x + circle.center.y * circle.center.y + seg.p1.x * seg.p1.x + seg.p1.y * seg.p1.y - 2 * (circle.center.x * seg.p1.x + circle.center.y * seg.p1.y) - circle.radius * circle.radius;
+    double c = circle.center.x * circle.center.x + circle.center.y * circle.center.y + seg.p1.x * seg.p1.x +
+               seg.p1.y * seg.p1.y - 2 * (circle.center.x * seg.p1.x + circle.center.y * seg.p1.y) -
+               circle.radius * circle.radius;
     double discriminant = b * b - 4 * a * c;
     if (discriminant < 0) {
         return 0;
@@ -116,64 +119,36 @@ int intersect(const Segment& seg, const Circle& circle, Point& p1, Point& p2) {
 }
 
 void findIntersections(auto points, auto circles) {
-    int max = -1;
-    size_t max_i = 0;
-    size_t max_j = 0;
+    int maxx = -1;
+    size_t maxx_i = 0;
+    size_t maxx_j = 0;
     for (size_t i = 0; i < points.size(); ++i) {
         for (size_t j = i + 1; j < points.size(); ++j) {
-            double A = points[j].y - points[i].y;
-            double B = points[i].x - points[j].x;
-            double C = points[j].x * points[i].y - points[i].x * points[j].y;
-            int summ = 0;
-            for (size_t k = 0; k < circles.size(); ++k) {
-                double x0 = circles[k].center.x;
-                double y0 = circles[k].center.y;
-                double r = circles[k].radius;
-                double x1, x2, y1, y2;
-                double a = (A * A / B * B) + 1;
-                double b = (2 * A * C) / (B * B) - 2 * A / B - 2
-                if (a == 0) {
-                    if (circles[k].radius * circles[k].radius - (((-c) / b) - y0) * (((-c) / b) - y0) < 0) {
-                        continue;
-                    }
-                    x1 = sqrt(circles[k].radius * circles[k].radius - (((-c) / b) - y0) * (((-c) / b) - y0)) + x0;
-                    x2 = -(sqrt(circles[k].radius * circles[k].radius - (((-c) / b) - y0) * (((-c) / b) - y0)) + x0);
-                } else if (b == 0) {
-                    if (circles[k].radius * circles[k].radius - (((-c) / a) - x0) * (((-c) / a) - x0) < 0) {
-                        continue;
-                    }
-                    y1 = sqrt(circles[k].radius * circles[k].radius - (((-c) / a) - x0) * (((-c) / a) - x0)) + y0;
-                    y2 = -(sqrt(circles[k].radius * circles[k].radius - (((-c) / a) - x0) * (((-c) / a) - x0)) + y0);
-                } else {
-                    double C = c * c + b * b * y0 * y0 - 2 * b * c * y0 + a * a * x0 * x0 - 2 * a * c * x0 - a * a * r * r;
-                    double D = B * B - 4 * A * C;
-                    if (D < 0) {
-                        continue;
-                    }
-                    x1 = (-B + sqrt(D)) / (2 * A);
-                    x2 = (-B - sqrt(D)) / (2 * A);
-                    y1 = (-c - a * x1) / b;
-                    y2 = (-c - a * x2) / b;
-                    if (((x1 <= max(points[i].x, points[j].x)) && (x1 >= min(points[i].x, points[j].x))) &&
-                        ((y1 <= max(points[i].y, points[j].y)) && (y1 >= min(points[i].y, points[j].y)))) {
-                            summ += 1;
-                            cout << x1 << " " << x2 << " " <<  y1 << " " <<  y2;
-                    }
-                    if (((x2 <= max(points[i].x, points[j].x)) && (x2 >= min(points[i].x, points[j].x))) &&
-                        ((y2 <= max(points[i].y, points[j].y)) && (y2 >= min(points[i].y, points[j].y)))) {
-                            summ += 1;
-                            cout << x1 << " " << x2 << " " <<  y1 << " " <<  y2;
-                    }
+            if ((points[i].x != points[j].x) && (points[i].y != points[j].y)) {
+                int summ = 0;
+                Segment seg = {{points[i].x, points[i].y},
+                               {points[j].x, points[j].y}};
+                for (size_t k = 0; k < circles.size(); ++k) {
+                    summ += intersect(seg, circles[k]);
+                }
+                if (summ > maxx) {
+                    maxx = summ;
+                    maxx_i = i;
+                    maxx_j = j;
                 }
             }
-
         }
-
     }
+    if (maxx == 0) {
+        cout << "No intersections";
+        return;
+    }
+    cout << "Max intersections is " << maxx << " between points: {x: " << points[maxx_i].x << ","
+         " y: " << points[maxx_i].y
+         << "}, {x: " << points[maxx_j].x << ", y: " << points[maxx_j].y << "}";
 }
 
 int main() {
-    SetConsoleOutputCP(65001);
     srand(time(nullptr));
     int n;
     cout << "Select task: \n"
@@ -208,7 +183,7 @@ int main() {
         size_t rows, cols = 0;
         cout << "Input number of rows and coll in array, use \"space\" as delimiter\n";
         cin >> rows >> cols;
-        int** arr = new int*[rows];
+        int **arr = new int *[rows];
         for (size_t i = 0; i < rows; ++i) {
             arr[i] = new int[cols];
         }
@@ -223,13 +198,13 @@ int main() {
         moveMinElement(arr, rows, cols);
         cout << "Result array: \n";
         arrayOutputHandler(arr, rows, cols);
-        for (size_t i = 0;  i < rows; ++i) {
+        for (size_t i = 0; i < rows; ++i) {
             delete[] arr[i];
         }
         delete[] arr;
     } else if (n == 3) {
-        vector <Point> points;
-        vector <Circle> circles;
+        vector<Point> points;
+        vector<Circle> circles;
         size_t pointsNumber, circlesNumber;
         cout << "Input number of points\n";
         cin >> pointsNumber;
