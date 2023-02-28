@@ -19,6 +19,10 @@ struct Circle {
     double radius;
 };
 
+struct Segment {
+    Point p1, p2;
+};
+
 void arrayInputHandler(auto arr, size_t rows, size_t cols, int mode) {
     if (mode == 1) {
         cout << "Input array line by line, use \"space\" as delimiter\n";
@@ -88,23 +92,46 @@ void circlesInputHandler(auto &circles, size_t pointsNumber) {
 
 }
 
+
+int intersect(const Segment& seg, const Circle& circle, Point& p1, Point& p2) {
+    int intersections = 0;
+    double dx = seg.p2.x - seg.p1.x;
+    double dy = seg.p2.y - seg.p1.y;
+    double a = dx * dx + dy * dy;
+    double b = 2 * (dx * (seg.p1.x - circle.center.x) + dy * (seg.p1.y - circle.center.y));
+    double c = circle.center.x * circle.center.x + circle.center.y * circle.center.y + seg.p1.x * seg.p1.x + seg.p1.y * seg.p1.y - 2 * (circle.center.x * seg.p1.x + circle.center.y * seg.p1.y) - circle.radius * circle.radius;
+    double discriminant = b * b - 4 * a * c;
+    if (discriminant < 0) {
+        return 0;
+    }
+    double t1 = (-b + sqrt(discriminant)) / (2 * a);
+    double t2 = (-b - sqrt(discriminant)) / (2 * a);
+    if (t1 >= 0 && t1 <= 1) {
+        intersections++;
+    }
+    if (t2 >= 0 && t2 <= 1) {
+        intersections++;
+    }
+    return intersections;
+}
+
 void findIntersections(auto points, auto circles) {
     int max = -1;
     size_t max_i = 0;
     size_t max_j = 0;
     for (size_t i = 0; i < points.size(); ++i) {
         for (size_t j = i + 1; j < points.size(); ++j) {
-            double a = points[i].y - points[j].y;
-            double b = points[j].x - points[i].x;
-            double c = points[j].y * points[i].x - points[i].y * points[j].x;
+            double A = points[j].y - points[i].y;
+            double B = points[i].x - points[j].x;
+            double C = points[j].x * points[i].y - points[i].x * points[j].y;
             int summ = 0;
             for (size_t k = 0; k < circles.size(); ++k) {
                 double x0 = circles[k].center.x;
                 double y0 = circles[k].center.y;
                 double r = circles[k].radius;
                 double x1, x2, y1, y2;
-                double A = b * b + a * a;
-                double B = 2 * (a * c + b * b * x0 - b * a * y0);
+                double a = (A * A / B * B) + 1;
+                double b = (2 * A * C) / (B * B) - 2 * A / B - 2
                 if (a == 0) {
                     if (circles[k].radius * circles[k].radius - (((-c) / b) - y0) * (((-c) / b) - y0) < 0) {
                         continue;
@@ -128,11 +155,14 @@ void findIntersections(auto points, auto circles) {
                     y1 = (-c - a * x1) / b;
                     y2 = (-c - a * x2) / b;
                     if (((x1 <= max(points[i].x, points[j].x)) && (x1 >= min(points[i].x, points[j].x))) &&
-                        ((x2 <= max(points[i].x, points[j].x)) && (x2 >= min(points[i].x, points[j].x)))) {
-                        if (((y1 <= max(points[i].y, points[j].y)) && (y1 >= min(points[i].y, points[j].y))) &&
-                            ((y2 <= max(points[i].y, points[j].y)) && (y2 >= min(points[i].y, points[j].y)))) {
+                        ((y1 <= max(points[i].y, points[j].y)) && (y1 >= min(points[i].y, points[j].y)))) {
                             summ += 1;
-                        }
+                            cout << x1 << " " << x2 << " " <<  y1 << " " <<  y2;
+                    }
+                    if (((x2 <= max(points[i].x, points[j].x)) && (x2 >= min(points[i].x, points[j].x))) &&
+                        ((y2 <= max(points[i].y, points[j].y)) && (y2 >= min(points[i].y, points[j].y)))) {
+                            summ += 1;
+                            cout << x1 << " " << x2 << " " <<  y1 << " " <<  y2;
                     }
                 }
             }
