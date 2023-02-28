@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include "Windows.h"
 
 using namespace std;
 
@@ -9,13 +10,13 @@ const int ROWS = 100;
 const int COLS = 100;
 
 struct Point {
-    int x;
-    int y;
+    double x;
+    double y;
 };
 
 struct Circle {
     Point center;
-    int radius;
+    double radius;
 };
 
 void arrayInputHandler(auto arr, size_t rows, size_t cols, int mode) {
@@ -88,23 +89,61 @@ void circlesInputHandler(auto &circles, size_t pointsNumber) {
 }
 
 void findIntersections(auto points, auto circles) {
+    int max = -1;
+    size_t max_i = 0;
+    size_t max_j = 0;
     for (size_t i = 0; i < points.size(); ++i) {
         for (size_t j = i + 1; j < points.size(); ++j) {
-            float si, sj, sk;
-            float mi, mj, mk;
-            si = points[j].x - points[i].x;
-            sj = points[j].y - points[i].y;
-            sk = 0;
+            double a = points[i].y - points[j].y;
+            double b = points[j].x - points[i].x;
+            double c = points[j].y * points[i].x - points[i].y * points[j].x;
+            int summ = 0;
             for (size_t k = 0; k < circles.size(); ++k) {
-
-
+                double x0 = circles[k].center.x;
+                double y0 = circles[k].center.y;
+                double r = circles[k].radius;
+                double x1, x2, y1, y2;
+                double A = b * b + a * a;
+                double B = 2 * (a * c + b * b * x0 - b * a * y0);
+                if (a == 0) {
+                    if (circles[k].radius * circles[k].radius - (((-c) / b) - y0) * (((-c) / b) - y0) < 0) {
+                        continue;
+                    }
+                    x1 = sqrt(circles[k].radius * circles[k].radius - (((-c) / b) - y0) * (((-c) / b) - y0)) + x0;
+                    x2 = -(sqrt(circles[k].radius * circles[k].radius - (((-c) / b) - y0) * (((-c) / b) - y0)) + x0);
+                } else if (b == 0) {
+                    if (circles[k].radius * circles[k].radius - (((-c) / a) - x0) * (((-c) / a) - x0) < 0) {
+                        continue;
+                    }
+                    y1 = sqrt(circles[k].radius * circles[k].radius - (((-c) / a) - x0) * (((-c) / a) - x0)) + y0;
+                    y2 = -(sqrt(circles[k].radius * circles[k].radius - (((-c) / a) - x0) * (((-c) / a) - x0)) + y0);
+                } else {
+                    double C = c * c + b * b * y0 * y0 - 2 * b * c * y0 + a * a * x0 * x0 - 2 * a * c * x0 - a * a * r * r;
+                    double D = B * B - 4 * A * C;
+                    if (D < 0) {
+                        continue;
+                    }
+                    x1 = (-B + sqrt(D)) / (2 * A);
+                    x2 = (-B - sqrt(D)) / (2 * A);
+                    y1 = (-c - a * x1) / b;
+                    y2 = (-c - a * x2) / b;
+                    if (((x1 <= max(points[i].x, points[j].x)) && (x1 >= min(points[i].x, points[j].x))) &&
+                        ((x2 <= max(points[i].x, points[j].x)) && (x2 >= min(points[i].x, points[j].x)))) {
+                        if (((y1 <= max(points[i].y, points[j].y)) && (y1 >= min(points[i].y, points[j].y))) &&
+                            ((y2 <= max(points[i].y, points[j].y)) && (y2 >= min(points[i].y, points[j].y)))) {
+                            summ += 1;
+                        }
+                    }
+                }
             }
 
         }
+
     }
 }
 
 int main() {
+    SetConsoleOutputCP(65001);
     srand(time(nullptr));
     int n;
     cout << "Select task: \n"
