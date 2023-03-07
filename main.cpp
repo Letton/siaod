@@ -70,9 +70,10 @@ PalindromeNumberInStr findMaxPalindrome(Word *words, size_t wordsCount) {
     };
     for (size_t i = 0; i < wordsCount; ++i) {
         if (isPalindrome(words[i])) {
+            ++palindromeNumber;
             if (words[i].size > maxPalindromeNumberInStr.strSize) {
                 maxPalindromeNumberInStr.firstCharIndex = words[i].firstCharIndex;
-                maxPalindromeNumberInStr.number = ++palindromeNumber;
+                maxPalindromeNumberInStr.number = palindromeNumber;
                 maxPalindromeNumberInStr.strSize = strlen(words[i].str);
                 maxPalindromeNumberInStr.wordIndex = i;
             }
@@ -92,18 +93,33 @@ void replaceStr(char* str, PalindromeNumberInStr palindrome, Word* words) {
         tempSize++;
     }
     tempStr[tempSize] = '\0';
-    cout << tempStr << " " << tempSize;
+    if (tempSize <= wordToReplace.size) {
+        for (size_t i = 0; i <  tempSize; ++i) {
+            str[wordToReplace.firstCharIndex + i] = tempStr[i];
+        }
+        for (size_t i = 0; i <  wordToReplace.size - tempSize; ++i) {
+            for (size_t j = wordToReplace.firstCharIndex + tempSize; j < strlen(str); ++j) {
+                str[j] = str[j + 1];
+            }
+        }
+    } else {
+        for (size_t i = 0; i < tempSize - wordToReplace.size; ++i) {
+            for (size_t j = strlen(str); j > wordToReplace.firstCharIndex + wordToReplace.size + i + 1; ++j) {
+                str[j + 1] = str[j];
+            }
+        }
+    }
 }
 
 int main() {
     int n;
-    cout << "Select task: \n"
-            "1 - Given a rectangular matrix. Rearrange the reduced element of the matrix in its upper left corner,\n"
-            "    sequentially permuting rows and columns.\n"
+    cout << "1 - Given a sentence consisting of words separated by commas or spaces. Find the longest palindrome word.\n"
+            "    Replace a word in a sentence with a number given its number among the sentence's palindromes.\n"
             "    (static array)\n"
-            "2 - Given a rectangular matrix. Rearrange the reduced element of the matrix in its upper left corner,\n"
-            "    sequentially permuting rows and columns.\n"
+            "2 - Given a sentence consisting of words separated by commas or spaces. Find the longest palindrome word.\n"
+            "    Replace a word in a sentence with a number given its number among the sentence's palindromes.\n"
             "    (std::string)\n";
+    cout << "Select task:\n";
     cin >> n;
     if (n == 1) {
         size_t wordsCount = 0;
@@ -115,6 +131,7 @@ int main() {
         copyCharArray(tempStr, str);
         splitIntoWords(tempStr, words, wordsCount);
         replaceStr(str, findMaxPalindrome(words, wordsCount), words);
+        cout << str;
     } else if (n == 2) {
 
     } else {
