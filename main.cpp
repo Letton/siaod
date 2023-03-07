@@ -2,217 +2,121 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <cstring>
 
 using namespace std;
 
-const int ROWS = 100;
-const int COLS = 100;
-
-struct Point {
-    double x;
-    double y;
+struct Word {
+    size_t firstCharIndex;
+    size_t size;
+    char* str;
 };
 
-struct Circle {
-    Point center;
-    double radius;
+struct PalindromeNumberInStr {
+    size_t firstCharIndex;
+    size_t number;
+    size_t strSize;
+    size_t wordIndex;
 };
 
-struct Segment {
-    Point p1, p2;
-};
+bool isPalindrome(const Word word) {
+    for (int i = 0; i < word.size / 2; i++) {
+        if (word.str[i] != word.str[word.size - i -  1]) {
+            return false;
+        }
+    }
+    return true;
+}
 
-void arrayInputHandler(auto arr, size_t rows, size_t cols, int mode) {
-    if (mode == 1) {
-        cout << "Input array line by line, use \"space\" as delimiter\n";
-        for (size_t i = 0; i < rows; ++i) {
-            for (size_t j = 0; j < cols; ++j) {
-                cin >> arr[i][j];
+void copyCharArray(char *dest, char *src) {
+    size_t len = strlen(src);
+    for (size_t i = 0; i < len; i++) {
+        dest[i] = src[i];
+    }
+    dest[len] = '\0';
+}
+
+void splitIntoWords(char* str, Word* words, size_t &wordsCount)  {
+    size_t i = 0, j = 0;
+    while (str[i] != '\0') {
+        if (!((str[i] >= 'a' && str[i] <= 'z') || (str[i] >= 'A' && str[i] <= 'Z') || (str[i] >= '0' && str[i] <= '9'))) {
+            str[i] = '\0';
+            if (j != 0) {
+                words[wordsCount].str = &str[i - j];
+                words[wordsCount].size = j;
+                words[wordsCount].firstCharIndex  = i - j;
+                wordsCount += 1;
             }
+            j = 0;
+        } else {
+            ++j;
         }
-    } else if (mode == 2) {
-        for (size_t i = 0; i < rows; ++i) {
-            for (size_t j = 0; j < cols; ++j) {
-                arr[i][j] = rand() % 2000 - 1000;
-            }
-        }
+        ++i;
+    }
+    if (j != 0) {
+        words[wordsCount].str = &str[i - j];
+        words[wordsCount].size = j;
+        words[wordsCount].firstCharIndex  = i - j;
+        wordsCount += 1;
     }
 }
 
-void arrayOutputHandler(auto arr, size_t rows, size_t cols) {
-    for (size_t i = 0; i < rows; ++i) {
-        for (size_t j = 0; j < cols; ++j) {
-            cout << arr[i][j] << " ";
-        }
-        cout << "\n";
-    }
-}
-
-void moveMinElement(auto arr, size_t rows, size_t cols) {
-    int min = INT32_MAX;
-    size_t minRow = 0, minCol = 0;
-    for (size_t i = 0; i < rows; ++i) {
-        for (size_t j = 0; j < cols; ++j) {
-            if (arr[i][j] < min) {
-                min = arr[i][j];
-                minRow = i;
-                minCol = j;
-            }
-        }
-    }
-    for (size_t i = minRow; i > 0; --i) {
-        swap(arr[i], arr[i - 1]);
-    }
-    for (size_t i = minCol; i > 0; --i) {
-        for (size_t j = 0; j < rows; ++j) {
-            swap(arr[j][i], arr[j][i - 1]);
-        }
-    }
-}
-
-void pointsInputHandler(auto &points, size_t circlesNumber) {
-    for (size_t i = 0; i < circlesNumber; ++i) {
-        Point p{};
-        cout << "Input x, y of point number " << i + 1 << ", use \"space\" as delimiter\n";
-        cin >> p.x >> p.y;
-        points.push_back(p);
-    }
-}
-
-void circlesInputHandler(auto &circles, size_t pointsNumber) {
-    for (size_t i = 0; i < pointsNumber; ++i) {
-        Point p{};
-        Circle c{};
-        cout << "Input x, y of circle number " << i + 1 << ", use \"space\" as delimiter\n";
-        cin >> p.x >> p.y;
-        c.center = p;
-        cout << "Input radius of circle number " << i + 1 << "\n";
-        cin >> c.radius;
-        circles.push_back(c);
-    }
-
-}
-
-
-int intersect(const Segment &seg, const Circle &circle) {
-    int intersections = 0;
-    double dx = seg.p2.x - seg.p1.x;
-    double dy = seg.p2.y - seg.p1.y;
-    double a = dx * dx + dy * dy;
-    double b = 2 * (dx * (seg.p1.x - circle.center.x) + dy * (seg.p1.y - circle.center.y));
-    double c = circle.center.x * circle.center.x + circle.center.y * circle.center.y + seg.p1.x * seg.p1.x +
-               seg.p1.y * seg.p1.y - 2 * (circle.center.x * seg.p1.x + circle.center.y * seg.p1.y) -
-               circle.radius * circle.radius;
-    double discriminant = b * b - 4 * a * c;
-    if (discriminant < 0) {
-        return 0;
-    }
-    double t1 = (-b + sqrt(discriminant)) / (2 * a);
-    double t2 = (-b - sqrt(discriminant)) / (2 * a);
-    if (t1 >= 0 && t1 <= 1) {
-        intersections++;
-    }
-    if (t2 >= 0 && t2 <= 1) {
-        intersections++;
-    }
-    return intersections;
-}
-
-void findIntersections(auto points, auto circles) {
-    int maxx = -1;
-    size_t maxx_i = 0;
-    size_t maxx_j = 0;
-    for (size_t i = 0; i < points.size(); ++i) {
-        for (size_t j = i + 1; j < points.size(); ++j) {
-            if ((points[i].x != points[j].x) && (points[i].y != points[j].y)) {
-                int summ = 0;
-                Segment seg = {{points[i].x, points[i].y},
-                               {points[j].x, points[j].y}};
-                for (size_t k = 0; k < circles.size(); ++k) {
-                    summ += intersect(seg, circles[k]);
-                }
-                if (summ > maxx) {
-                    maxx = summ;
-                    maxx_i = i;
-                    maxx_j = j;
-                }
+PalindromeNumberInStr findMaxPalindrome(Word *words, size_t wordsCount) {
+    size_t palindromeNumber = 0;
+    PalindromeNumberInStr maxPalindromeNumberInStr {
+        0,
+        0,
+        0
+    };
+    for (size_t i = 0; i < wordsCount; ++i) {
+        if (isPalindrome(words[i])) {
+            if (words[i].size > maxPalindromeNumberInStr.strSize) {
+                maxPalindromeNumberInStr.firstCharIndex = words[i].firstCharIndex;
+                maxPalindromeNumberInStr.number = ++palindromeNumber;
+                maxPalindromeNumberInStr.strSize = strlen(words[i].str);
+                maxPalindromeNumberInStr.wordIndex = i;
             }
         }
     }
-    if (maxx == 0) {
-        cout << "No intersections";
-        return;
+    return maxPalindromeNumberInStr;
+}
+
+void replaceStr(char* str, PalindromeNumberInStr palindrome, Word* words) {
+    Word wordToReplace = words[palindrome.wordIndex];
+    char tempStr [1024];
+    size_t tempSize = 0;
+    size_t tempNumber = palindrome.number;
+    while (tempNumber != 0) {
+        tempStr[tempSize] = (tempNumber % 10) + '0';
+        tempNumber /= 10;
+        tempSize++;
     }
-    cout << "Max intersections is " << maxx << " between points: {x: " << points[maxx_i].x << ","
-         " y: " << points[maxx_i].y
-         << "}, {x: " << points[maxx_j].x << ", y: " << points[maxx_j].y << "}";
+    tempStr[tempSize] = '\0';
+    cout << tempStr << " " << tempSize;
 }
 
 int main() {
-    srand(time(nullptr));
     int n;
     cout << "Select task: \n"
             "1 - Given a rectangular matrix. Rearrange the reduced element of the matrix in its upper left corner,\n"
             "    sequentially permuting rows and columns.\n"
             "    (static array)\n"
-
             "2 - Given a rectangular matrix. Rearrange the reduced element of the matrix in its upper left corner,\n"
             "    sequentially permuting rows and columns.\n"
-            "    (dynamic array)\n"
-            "3 - A set of points A and a set of circles B are given on the plane. Find two such different points\n"
-            "    from A that the line passing through them intersects with the maximum number of circles from B.\n"
-            "    (std::vector)\n";
+            "    (std::string)\n";
     cin >> n;
     if (n == 1) {
-        int arr[ROWS][COLS] = {0}, mode;
-        size_t rows, cols = 0;
-        cout << "Input number of rows and coll in array, use \"space\" as delimiter\n"
-                "(max number of rows or cols is 100)\n";
-        cin >> rows >> cols;
-        cout << "Input mode: \n"
-                "1 - Manual filling\n"
-                "2 - Random filling\n";
-        cin >> mode;
-        arrayInputHandler(arr, rows, cols, mode);
-        cout << "Entered array: \n";
-        arrayOutputHandler(arr, rows, cols);
-        moveMinElement(arr, rows, cols);
-        cout << "Result array: \n";
-        arrayOutputHandler(arr, rows, cols);
+        size_t wordsCount = 0;
+        char str[1024], tempStr[1024];
+        Word words[1024];
+        cout << "Input sentence (max sentence size = 1024)\n";
+        cin.ignore();
+        cin.getline(str, 1024);
+        copyCharArray(tempStr, str);
+        splitIntoWords(tempStr, words, wordsCount);
+        replaceStr(str, findMaxPalindrome(words, wordsCount), words);
     } else if (n == 2) {
-        size_t rows, cols = 0;
-        cout << "Input number of rows and coll in array, use \"space\" as delimiter\n";
-        cin >> rows >> cols;
-        int **arr = new int *[rows];
-        for (size_t i = 0; i < rows; ++i) {
-            arr[i] = new int[cols];
-        }
-        cout << "Input mode: \n"
-                "1 - Manual filling\n"
-                "2 - Random filling\n";
-        int mode;
-        cin >> mode;
-        arrayInputHandler(arr, rows, cols, mode);
-        cout << "Entered array: \n";
-        arrayOutputHandler(arr, rows, cols);
-        moveMinElement(arr, rows, cols);
-        cout << "Result array: \n";
-        arrayOutputHandler(arr, rows, cols);
-        for (size_t i = 0; i < rows; ++i) {
-            delete[] arr[i];
-        }
-        delete[] arr;
-    } else if (n == 3) {
-        vector<Point> points;
-        vector<Circle> circles;
-        size_t pointsNumber, circlesNumber;
-        cout << "Input number of points\n";
-        cin >> pointsNumber;
-        cout << "Input number of circles\n";
-        cin >> circlesNumber;
-        pointsInputHandler(points, pointsNumber);
-        circlesInputHandler(circles, circlesNumber);
-        findIntersections(points, circles);
+
     } else {
         cout << "Incorrect input\n";
         return -1;
