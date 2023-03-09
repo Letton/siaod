@@ -61,6 +61,28 @@ void splitIntoWords(char* str, Word* words, size_t &wordsCount)  {
     }
 }
 
+void splitIntoWords(string str, vector <string> words, size_t &wordsCount)  {
+    size_t i = 0, j = 0;
+    while (str[i] != '\0') {
+        if (!((str[i] >= 'a' && str[i] <= 'z') || (str[i] >= 'A' && str[i] <= 'Z') || (str[i] >= '0' && str[i] <= '9'))) {
+            str[i] = '\0';
+            if (j != 0) {
+
+            }
+            j = 0;
+        } else {
+            ++j;
+        }
+        ++i;
+    }
+    if (j != 0) {
+        words[wordsCount].str = &str[i - j];
+        words[wordsCount].size = j;
+        words[wordsCount].firstCharIndex  = i - j;
+        wordsCount += 1;
+    }
+}
+
 PalindromeNumberInStr findMaxPalindrome(Word *words, size_t wordsCount) {
     size_t palindromeNumber = 0;
     PalindromeNumberInStr maxPalindromeNumberInStr {
@@ -82,6 +104,13 @@ PalindromeNumberInStr findMaxPalindrome(Word *words, size_t wordsCount) {
     return maxPalindromeNumberInStr;
 }
 
+void shiftRight(char arr[], int arrSize, int startIndex, int shiftAmount) {
+    for (int i = arrSize; i >= startIndex + shiftAmount; i--) {
+        arr[i] = arr[i - shiftAmount];
+    }
+    arr[arrSize + 1] = '\0';
+}
+
 void replaceStr(char* str, PalindromeNumberInStr palindrome, Word* words) {
     Word wordToReplace = words[palindrome.wordIndex];
     char tempStr [1024];
@@ -95,7 +124,7 @@ void replaceStr(char* str, PalindromeNumberInStr palindrome, Word* words) {
     tempStr[tempSize] = '\0';
     if (tempSize <= wordToReplace.size) {
         for (size_t i = 0; i <  tempSize; ++i) {
-            str[wordToReplace.firstCharIndex + i] = tempStr[i];
+            str[wordToReplace.firstCharIndex + i] = tempStr[tempSize - i - 1];
         }
         for (size_t i = 0; i <  wordToReplace.size - tempSize; ++i) {
             for (size_t j = wordToReplace.firstCharIndex + tempSize; j < strlen(str); ++j) {
@@ -104,9 +133,11 @@ void replaceStr(char* str, PalindromeNumberInStr palindrome, Word* words) {
         }
     } else {
         for (size_t i = 0; i < tempSize - wordToReplace.size; ++i) {
-            for (size_t j = strlen(str); j > wordToReplace.firstCharIndex + wordToReplace.size + i + 1; ++j) {
-                str[j + 1] = str[j];
-            }
+            shiftRight(str, strlen(str), wordToReplace.firstCharIndex + wordToReplace.size,
+                       1);
+        }
+        for (size_t i = 0; i < tempSize; ++i) {
+            str[wordToReplace.firstCharIndex + i] = tempStr[tempSize - i - 1];
         }
     }
 }
@@ -133,6 +164,13 @@ int main() {
         replaceStr(str, findMaxPalindrome(words, wordsCount), words);
         cout << str;
     } else if (n == 2) {
+        size_t wordsCount = 0;
+        string s;
+        vector <string> words;
+        cout << "Input sentence\n";
+        cin.ignore();
+        getline(cin, s);
+        splitIntoWords(s, words, wordsCount);
 
     } else {
         cout << "Incorrect input\n";
