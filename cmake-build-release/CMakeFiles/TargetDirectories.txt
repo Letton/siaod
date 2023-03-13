@@ -1,3 +1,0 @@
-C:/Users/Letton/Desktop/siaod/cmake-build-release/CMakeFiles/siaod.dir
-C:/Users/Letton/Desktop/siaod/cmake-build-release/CMakeFiles/edit_cache.dir
-C:/Users/Letton/Desktop/siaod/cmake-build-release/CMakeFiles/rebuild_cache.dir
