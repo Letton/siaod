@@ -18,8 +18,6 @@ struct Table {
     size_t size;
 };
 
-Curriculum inputCurriculum(Curriculum curriculum);
-
 ostream &operator<<(ostream &os, const Table &table);
 
 istream &operator>>(istream &is, Curriculum &curriculum);

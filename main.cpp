@@ -6,7 +6,7 @@ int main() {
     cout << "Select option: \n"
             "1 - Fill the table with test data\n"
             "2 - Select task\n"
-            "3 - Exit\n";
+            "0 - Exit\n";
     cin >> n;
     if (n == 1) {
         push_back(table, {"090302", "Applied_Informatics",

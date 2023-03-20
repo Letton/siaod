@@ -88,7 +88,6 @@ void delete_on_expiration(Table &table) {
     time_t now = time(nullptr);
     tm ltm = {};
     localtime_s(&ltm, &now);
-    cout << ltm.tm_year + 1900;
     for (size_t i = 0; i < table.size; ++i) {
         if (table.rows[i].start_year < ltm.tm_year + 1900 - 3) {
             table.size--;
