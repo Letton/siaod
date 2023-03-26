@@ -15,10 +15,13 @@ public:
 
     ~List();
 
-    void addNode(int key);
+    void add_node(const int &key);
 
-    void printList() const;
+    void print_list() const;
 
+    bool delete_key(const int &key);
+
+    Node* find_key(const int &key) const;
 };
 
 
