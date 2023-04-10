@@ -26,46 +26,14 @@ void List::print_list() const {
     std::cout << "nullptr\n";
 }
 
-bool List::delete_key(const int &key) {
-    bool flag = false;
-    Node *current = head;
-    Node *prev = current;
-    while(current != nullptr) {
-        if (current->key == key && current == head) {
-            current = head->next;
-            delete head;
-            head = current;
-            prev = current;
-        } else if (current->key == key) {
-            prev->next = current->next;
-            delete current;
-            current = prev->next;
-            flag = true;
-        } else {
-            prev = current;
-            current = current->next;
-        }
-    }
-    return flag;
-}
-
 List::List():head(nullptr){}
 
 List::~List() {
     Node *current = head;
+    Node *tmp;
     while(current != nullptr) {
-        std::cout << current->key << '\n';
-        current = current->next;
+        tmp = current->next;
+        delete current;
+        current = tmp;
     }
 }
-
-Node *List::find_key(const int &key) const {
-    Node *current = head;
-    while(current != nullptr) {
-        if (current->key == key) {
-            return current;
-        }
-        current = current->next;
-    }
-    return nullptr;
-};

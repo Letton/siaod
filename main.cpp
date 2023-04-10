@@ -3,85 +3,92 @@
 
 using namespace std;
 
-void insert_key(auto &lists, int key, const size_t &size) {
-    size_t i = key % size;
-    lists[i].add_node(key);
-}
-
-void print_lists(auto &lists, const size_t &size) {
-    cout << "Lists:\n";
-    for (size_t i = 0; i < size; ++i) {
-        cout << i << ": ";
-        lists[i].print_list();
+void remove_zeros(Node *&node) {
+    if (node == nullptr) {
+        return;
+    }
+    if (node->key == 0) {
+        Node *temp = node;
+        node = node->next;
+        delete temp;
+        return remove_zeros(node);
+    } else {
+        remove_zeros(node->next);
     }
 }
 
-bool delete_key(auto &lists, const size_t &size, const int &key) {
-    bool flag = false;
-    for (size_t i = 0; i < size; ++i) {
-        if (lists[i].delete_key(key)) {
-            flag = true;
+long long calculate_expression(int* &arr, const size_t arr_size) {
+    if (arr_size == 0) {
+        return 0;
+    }
+    long long summ = 1;
+    for (size_t i = 1; i <= arr_size; ++i) {
+        long long sub_summ = 0;
+        for (size_t j = 0; j < i; ++j) {
+            sub_summ += arr[arr_size - 1 - j];
         }
+        summ *= sub_summ;
     }
-    return flag;
+    return summ;
 }
 
-Node* find_key(auto &lists, const size_t &size, const int &key) {
-    for (size_t i = 0; i < size; ++i) {
-        Node* node = lists[i].find_key(key);
-        if (node != nullptr) {
-            return node;
-        }
+
+long long calculate_expression_recursive(int* &arr, size_t n) {
+    if (n == 0) {
+        return arr[0];
     }
-    return nullptr;
+    long long x_n = arr[n];
+    long long prev = calculate_expression_recursive(arr, n - 1);
+    return x_n * (x_n + prev);
 }
 
 int main() {
-    size_t lists_size;
-    List lists[1000];
     int n;
-    cout << "Input the size of the array of lists (max size = 1000):\n";
-    cin >> lists_size;
     cout << "Select task: \n"
-          "1 - Inserting the key a passed as a parameter into the i-th list of the array.\n"
-          "    Index i is determined by the rule: i = key % n.\n"
-          "2 - Remove key value from list\n"
-          "3 - Find a node with a key value and return a pointer to the found node.\n"
-          "0 - Exit\n";
+            "1 - Given a sequence of N numbers X1,X2,....,XN. Calculate the value of the expression:\n"
+            "Xn(Xn+Xn-1)(Xn+Xn-1+Xn-2)(Xn+Xn-1+Xn-2+Xn-3)... (Xn+Xn-1+Xn- 2+...+X1)\n"
+            "(Iterative method)\n"
+            "2 - Given a sequence of N numbers X1,X2,....,XN. Calculate the value of the expression:\n"
+            "Xn(Xn+Xn-1)(Xn+Xn-1+Xn-2)(Xn+Xn-1+Xn-2+Xn-3)... (Xn+Xn-1+Xn- 2+...+X1)\n"
+            "(Recursive method)\n"
+            "3 - Remove zeros from singly-directed list\n"
+            "(Recursive method)\n";
     cin >> n;
-    while (n != 0) {
-        if (n == 1) {
-            int key;
-            cout << "Input key:\n";
-            cin >> key;
-            insert_key(lists, key, lists_size);
-            print_lists(lists, lists_size);
-        } else if (n == 2) {
-            int key;
-            cout << "Input enter the value of the key to delete:\n";
-            cin >> key;
-            if (!delete_key(lists, lists_size, key)) {
-                cout << "Key not found in any list\n";
-            }
-            print_lists(lists, lists_size);
-        } else if (n == 3) {
-            int key;
-            cout << "Input enter the value of the key to find:\n";
-            cin >> key;
-            Node* node = find_key(lists, lists_size, key);
-            if (node == nullptr) {
-                cout << "Key not found in any list\n";
-            } else {
-                cout << "Address of the first occurrence of the key " << node->key << " is " << node << "\n";
-            }
+    if (n == 1) {
+        size_t arr_size;
+        cout << "Input count of numbers:\n";
+        cin >> arr_size;
+        int *arr = new int[arr_size];
+        cout << "Input numbers, use \"space\" as delimiter:\n";
+        for (size_t i = 0; i < arr_size; ++i) {
+            cin >> arr[i];
         }
-        cout << "Select task: \n"
-                "1 - Inserting the key a passed as a parameter into the i-th list of the array.\n"
-                "    Index i is determined by the rule: i = key % n.\n"
-                "2 - Remove key value from list\n"
-                "3 - Find a node with a key value and return a pointer to the found node.\n"
-                "0 - Exit\n";
-        cin >> n;
+        cout << "Value of the expression: " << calculate_expression(arr, arr_size) << "\n";
+    } else if (n == 2) {
+        size_t arr_size;
+        long long summ = 1;
+        cout << "Input count of numbers:\n";
+        cin >> arr_size;
+        int *arr = new int[arr_size];
+        cout << "Input numbers, use \"space\" as delimiter:\n";
+        for (size_t i = 0; i < arr_size; ++i) {
+            cin >> arr[i];
+        }
+        cout  << "Value of the expression: " << calculate_expression_recursive(arr, arr_size - 1);
+    } else if (n == 3) {
+        size_t list_size;
+        int key;
+        List list;
+        cout << "Input the number of nodes in the list:\n";
+        cin >> list_size;
+        cout << "Input keys, use \"space\" as delimiter:\n";
+        for (size_t i = 0; i < list_size; ++i) {
+            cin >> key;
+            list.add_node(key);
+        }
+        remove_zeros(list.head);
+        cout << "List without zeros:\n";
+        list.print_list();
     }
     return 0;
 }
