@@ -3,4 +3,4 @@ project(siaod)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(siaod main.cpp List.cpp List.h)
+add_executable(siaod main.cpp StackList.h StackArray.h)
